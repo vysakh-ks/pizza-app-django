@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}orders{% endblock title %}
+{% block content %}
+
+<section id="orders">
+
+    {% if orders %}
+        {% if firstobjectofCurrentuser.order_confirmed == False %}
+        <h1>Your orders</h1>
+        <div class="table__orders__container">
+            <div class="table__orders">
+                <table>
+                    <tr>
+                        <th>Pizza Name</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>cancel</th>
+                    </tr>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{order.pizza_name}}</td>
+                        <td>{{order.pizza_desc|truncatechars:50}}</td>
+                    
+                        <td>
+                            <form action="/decreament/" method = 'POST' class="btn__increament__decreament">
+                                {% csrf_token %}
+                                <input type="text" name="order_id" id="order_id" value="{{order.id}}">
+                                <input type="text" name="pizza_name" id="pizza_name_" value="{{order.pizza_name}}">
+                                <button type="submit"><i class="fas fa-minus" aria-hidden="true"></i></button>
+                            </form>
+                            {{order.quantity}}
+                            
+                            <form action="/increament/" method='POST' class="btn__increament__decreament">
+                                {% csrf_token %}
+                                <input type="text" name="order_id" id="order_id" value="{{order.id}}">
+                                <input type="text" name="pizza_name" id="pizza_name_" value="{{order.pizza_name}}">
+                                <button type="submit"><i class="fas fa-plus" aria-hidden="true"></i></button>
+                            </form>
+                        </td>
+                        <td>$ {{order.pizza_price}} </td>
+                        <td>
+                            <form action="/deleteOrder/" method = 'POST'>
+                                {% csrf_token %}
+                                <input type="text" name="order_id" value="{{order.id}}">
+                                <button type="submit"><i class="fas fa-trash-alt" aria-hidden="true"> </i></button>
+
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <th>Your</th>
+                        <th>Total Price</th>
+                        <th>$ {{totalprice}}</th>
+                        <th></th>
+                        <th>
+                            <form action="/deleteallOrders/" method='POST'>
+                                {% csrf_token %}
+                                <button type="submit"><i class="fas fa-trash-alt" aria-hidden="true"></i> Delete all</button>  
+                            </form>
+                        </th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    <div class="confirm_orders">
+        <form action="/orderConfirmed/" method='POST'>
+            {% csrf_token %}
+            <button type="submit">Confirm your order <i class="fas fa-check" aria-hidden="true"></i></button>
+        </form>
+    </div>
+    <h4>Please pay on delivery !</h4>
+    {% else %}
+    <h1 class="confirmed_bill">Your order has been successfully confirmed<i class="fas fa-check" aria-hidden="true"></i></h1>
+    <div class="bill_container">
+        <div class="bill_box">
+            <table>
+                <tr>
+                    <th>PIzza Name</th>
+                    <th>Pizza Quantity</th>
+                    <th>Pizza Price</th>
+                </tr>
+                {% for pizza in orders %}
+                <tr>
+                    <td>{{pizza.pizza_name}}</td>
+                    <td>{{pizza.quantity}}</td>
+                    <td>$ {{pizza.pizza_price}}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    <td>Your total price </td>
+                    <td>$ {{totalprice}}</td>
+                    
+                </tr>
+            </table>
+        </div>
+    </div>
+    <form action="/deleteallOrders/" method='POST'>
+        {% csrf_token %}
+        <button type="submit" class="cancel_all_order"><i class="fas fa-times" aria-hidden="true"></i> Cancel your order</button>
+
+    </form>
+    {% endif %}
+  {% else %}
+  <h4>No orders yet ! please make an <a href="/menu/">order</a></h4>
+  {% endif %}
+</section>
+{% endblock content %}
